@@ -1,17 +1,22 @@
 package com.chiranjeev.location.controllers;
 
+
 import java.util.List;
+
+import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.chiranjeev.location.entities.Location;
+import com.chiranjeev.location.repos.LocationRepository;
 import com.chiranjeev.location.service.LocationServices;
+import com.chiranjeev.location.util.EmailUtil;
+import com.chiranjeev.location.util.ReportUtil;
 
 @Controller
 public class LocationController {
@@ -19,7 +24,22 @@ public class LocationController {
 
 	@Autowired
 	LocationServices service;
-
+	
+    @Autowired 
+	EmailUtil email;
+    
+    @Autowired
+    LocationRepository repository;
+    
+    @Autowired
+    ServletContext contextPath;
+    
+    @Autowired
+    EmailUtil emailUtil;
+    
+    @Autowired
+    ReportUtil  reportUtil;
+    
 	@RequestMapping("/showCreate")
 	public String showCreate(){
 		return "createLocation";
@@ -29,6 +49,7 @@ public class LocationController {
 		service.saveLocation(location);
 		String msg="Location saved with id: "+location.getId();
 		modelMap.addAttribute("msg", msg);
+		email.sendEmail("chiranjeev.official@gmail.com", "A locaiton has been saved", msg);
 		return "createLocation";
 	}
 
@@ -61,10 +82,21 @@ public class LocationController {
 	@RequestMapping("/updateLoc")
 	public String updaetLoc(@ModelAttribute("location") Location location,ModelMap modelMap ) {
 		service.updateLocation(location);
-		List locations= service.getAllLocations();
-		modelMap.addAttribute("location",locations);
+		List<Location> locations= service.getAllLocations();
+		modelMap.addAttribute("locations",locations);
 		
 		return "displayLocations";
 	}
+   
+	@RequestMapping("/generateReport")
+   public String generateReport() {
+	   
+	   String path=contextPath.getRealPath("/");
+	   
+	   List<Object[]> data=repository.findTypeAndTypeCount();
+	   
+	   reportUtil.generatePieChart(path, data);
 
+	   return"report";
+   }
 }

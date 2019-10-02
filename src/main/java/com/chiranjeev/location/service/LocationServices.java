@@ -11,4 +11,5 @@ public interface LocationServices {
     Location updateLocation(Location location);
     Location saveLocation(Location location);
     List<Location> getAllLocations();
+    
 }

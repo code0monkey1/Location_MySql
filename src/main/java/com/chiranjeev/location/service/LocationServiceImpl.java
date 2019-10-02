@@ -3,6 +3,7 @@ package com.chiranjeev.location.service;
 import com.chiranjeev.location.entities.Location;
 import com.chiranjeev.location.repos.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 public class LocationServiceImpl implements LocationServices {
     @Autowired
     private LocationRepository repository;
+    
     @Override
     public Location getLocationById(int id) {
         return repository.findById(id).get();
